@@ -1,0 +1,12 @@
+Koffset written in Golang
+
+The guide use koffset
+
+chmod +x koffset
+./koffset -b <bootstrap-server> -t <topic> -p <partition> -offset <offset number>
+
+option           Default
+-b               null
+-t               null
+-p               all
+-offset          last offset
