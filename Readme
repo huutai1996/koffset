@@ -10,3 +10,5 @@ option           Default
 -t               null
 -p               all
 -offset          last offset
+-username        null
+-password        null
