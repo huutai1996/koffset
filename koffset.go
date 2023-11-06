@@ -10,8 +10,13 @@ import (
 	"strings"
 )
 
-func connectKafka(brokersurl []string) (sarama.Consumer, error) {
+func connectKafka(brokersurl []string, username string, password string) (sarama.Consumer, error) {
 	config := sarama.NewConfig()
+	if username != "" && password != "" {
+		config.Net.SASL.Enable = true
+		config.Net.SASL.User = username
+		config.Net.SASL.Password = password
+	}
 	conn, err := sarama.NewConsumer(brokersurl, config)
 	return conn, err
 }
@@ -21,6 +26,8 @@ func main() {
 	topic := flag.String("t", "", "topic name")
 	offset := flag.Int64("offset", sarama.OffsetOldest, "Kafka offset (e.g., OffsetOldest or OffsetNewest)")
 	p := flag.String("p", "all", "partition consume")
+	username := flag.String("username", "", "username for authentication kafka")
+	password := flag.String("password", "", "password for authentication kafka")
 	flag.Parse()
 	fmt.Println(os.Args)
 	if len(os.Args) < 5 {
@@ -33,7 +40,7 @@ func main() {
 	}
 	brokerlist := strings.Split(*brokers, ",")
 	// Create new kafka consumer
-	consumer, err := connectKafka(brokerlist)
+	consumer, err := connectKafka(brokerlist, *username, *password)
 	if err != nil {
 		panic(err)
 	}
