@@ -16,6 +16,9 @@ func connectKafka(brokersurl []string, username string, password string) (sarama
 		config.Net.SASL.Enable = true
 		config.Net.SASL.User = username
 		config.Net.SASL.Password = password
+		config.Net.TLS.Enable = false
+		config.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+
 	}
 	conn, err := sarama.NewConsumer(brokersurl, config)
 	return conn, err
@@ -42,6 +45,7 @@ func main() {
 	// Create new kafka consumer
 	consumer, err := connectKafka(brokerlist, *username, *password)
 	if err != nil {
+		fmt.Println("The error connect kafka")
 		panic(err)
 	}
 	defer func() {
@@ -78,7 +82,12 @@ func main() {
 			for {
 				select {
 				case msg := <-pc.Messages():
-					fmt.Printf("Partiton: %d, Offset: %d, Message: %s\n", msg.Partition, msg.Offset, string(msg.Value))
+					//createTime, err := time.Parse("2006-01-02T15:04:05.999999999Z07:00", msg.Timestamp.String())
+					if err != nil {
+						fmt.Println("The error convert time")
+						panic(err)
+					}
+					fmt.Printf("Timestamp: %s Partiton: %d, Offset: %d, Message: %s\n\n", msg.Timestamp, msg.Partition, msg.Offset, string(msg.Value))
 				case <-signals:
 					return
 				}
