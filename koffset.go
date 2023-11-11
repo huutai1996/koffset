@@ -16,10 +16,11 @@ func connectKafka(brokersurl []string, username string, password string) (sarama
 		config.Net.SASL.Enable = true
 		config.Net.SASL.User = username
 		config.Net.SASL.Password = password
-		config.Net.TLS.Enable = false
-		config.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+		config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA512
 
 	}
+	fmt.Println(username)
+	fmt.Println(password)
 	conn, err := sarama.NewConsumer(brokersurl, config)
 	return conn, err
 }
@@ -43,6 +44,7 @@ func main() {
 	}
 	brokerlist := strings.Split(*brokers, ",")
 	// Create new kafka consumer
+	fmt.Println("starting connect to kafka")
 	consumer, err := connectKafka(brokerlist, *username, *password)
 	if err != nil {
 		fmt.Println("The error connect kafka")
